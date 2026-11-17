@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>100 Irresponsables Dijeron - Juego TV</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts para estética de televisión -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@600;800;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Estilos personalizados para ambientación de set de televisión */
+        :root {
+            --tv-blue-dark: #060b28;
+            --tv-blue-mid: #0d1b5e;
+            --tv-gold: #fbbf24;
+            --tv-gold-glow: rgba(251, 191, 36, 0.65);
+            --tv-cyan: #22d3ee;
+            --tv-red: #ef4444;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: radial-gradient(circle at 50% 25%, #172a82 0%, #091038 55%, #030617 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+            user-select: none;
+        }
+
+        .font-display {
+            font-family: 'Anton', sans-serif;
+            letter-spacing: 0.04em;
+        }
+
+        .font-digital {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        /* Efecto de luces de marquesina alrededor del tablero */
+        .tv-board-frame {
+            background: linear-gradient(180deg, #0b1547 0%, #050a24 100%);
+            border: 6px solid #f59e0b;
+            box-shadow: 
+                0 0 25px rgba(245, 158, 11, 0.5),
+                inset 0 0 30px rgba(34, 211, 238, 0.25);
+            position: relative;
+        }
+
+        /* Focos decorativos en el borde */
+        .marquee-bulbs {
+            background-image: radial-gradient(circle, #fef08a 35%, #f59e0b 65%, transparent 72%);
+            background-size: 24px 24px;
+            animation: bulbPulse 1.4s infinite alternate;
+        }
+
+        @keyframes bulbPulse {
+            0% { opacity: 0.7; filter: brightness(0.95); }
+            100% { opacity: 1; filter: brightness(1.35) drop-shadow(0 0 6px #fde047); }
+        }
+
+        /* Animación 3D de volteo de tarjeta */
+        .flip-card {
+            perspective: 1000px;
+            height: 76px;
+        }
+
+        @media (min-width: 768px) {
+            .flip-card {
+                height: 86px;
+            }
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform-style: preserve-3d;
+        }
+
+        .flip-card.revealed .flip-card-inner {
+            transform: rotateX(180deg);
+        }
+
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* Cara frontal (Oculta - Solo el número) */
+        .flip-card-front {
+            background: linear-gradient(180deg, #1d4ed8 0%, #1e3a8a 50%, #172554 100%);
+            border: 3px solid #38bdf8;
+            box-shadow: inset 0 2px 10px rgba(255,255,255,0.3), 0 4px 10px rgba(0,0,0,0.5);
+            justify-content: center;
+        }
+
+        .flip-card-front:hover {
+            border-color: #fde047;
+            filter: brightness(1.1);
+        }
+
+        .number-badge {
+            width: 52px;
+            height: 52px;
+            border-radius: 9999px;
+            background: radial-gradient(circle at 30% 30%, #38bdf8, #0284c7);
+            border: 3px solid #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 1.75rem;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.7);
+        }
+
+        /* Cara trasera (Revelada - Respuesta y Puntos) */
+        .flip-card-back {
+            background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+            border: 3px solid #fbbf24;
+            color: #0f172a;
+            transform: rotateX(180deg);
+            justify-content: space-between;
+            box-shadow: inset 0 2px 6px rgba(255,255,255,0.9), 0 0 18px rgba(251, 191, 36, 0.45);
+        }
+
+        .points-box {
+            background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%);
+            color: #ffffff;
+            border-left: 3px solid #fbbf24;
+            height: 100%;
+            min-width: 78px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 1.75rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        /* Animación de X gigante al presionar 0 */
+        @keyframes strikePop {
+            0% { transform: scale(0.2) rotate(-12deg); opacity: 0; }
+            50% { transform: scale(1.15) rotate(3deg); opacity: 1; }
+            75% { transform: scale(0.95) rotate(-2deg); opacity: 1; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        .strike-animate {
+            animation: strikePop 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        .big-x-card {
+            background: linear-gradient(145deg, #dc2626, #991b1b);
+            border: 8px solid #fef2f2;
+            box-shadow: 0 0 50px rgba(239, 68, 68, 0.95), inset 0 0 20px rgba(0,0,0,0.4);
+            text-shadow: 0 6px 12px rgba(0,0,0,0.6);
+        }
+
+        /* Brillo del logo */
+        .logo-glow {
+            text-shadow: 
+                0 2px 0 #b45309,
+                0 4px 0 #78350f,
+                0 8px 20px rgba(251, 191, 36, 0.75);
+        }
+
+        /* Scrollbar estilizado para el modal */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #091038;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #f59e0b;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between p-2 sm:p-4 md:p-6">
+
+    <!-- OVERLAY DE STRIKE GIGANTE (Aparece al presionar 0) -->
+    <div id="strikeOverlay" class="fixed inset-0 z-50 pointer-events-none hidden flex items-center justify-center bg-black/60 backdrop-blur-xs">
+        <div id="strikeContainer" class="flex gap-4 sm:gap-8 items-center justify-center px-4">
+            <!-- Las X se inyectan dinámicamente aquí -->
+        </div>
+    </div>
+
+    <!-- NOTIFICACIÓN FLOTANTE (Toast en lugar de alert) -->
+    <div id="toastNotification" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 hidden bg-amber-400 text-slate-950 font-extrabold px-6 py-3 rounded-full shadow-2xl border-2 border-white transition-all duration-300">
+        Mensaje
+    </div>
+
+    <!-- ENCABEZADO ESTILO SHOW DE TV -->
+    <header class="max-w-7xl w-full mx-auto flex flex-col md:flex-row items-center justify-between gap-3 mb-3">
+        <!-- Indicador de Ronda y Multiplicador -->
+        <div class="flex items-center gap-2 bg-slate-900/90 border-2 border-cyan-400/70 px-4 py-2 rounded-2xl shadow-lg">
+            <button onclick="prevRound()" title="Ronda Anterior (Flecha Izquierda)" class="p-1.5 hover:bg-cyan-500/20 rounded-lg text-cyan-300 transition cursor-pointer">
+                ◀
+            </button>
+            <div class="text-center px-2">
+                <span class="text-xs uppercase tracking-widest text-cyan-300 block font-bold">Ronda</span>
+                <span id="roundIndicator" class="font-digital text-xl font-black text-white">1 / 10</span>
+            </div>
+            <button onclick="nextRound()" title="Siguiente Ronda (Flecha Derecha)" class="p-1.5 hover:bg-cyan-500/20 rounded-lg text-cyan-300 transition cursor-pointer">
+                ▶
+            </button>
+            <div class="h-8 w-px bg-slate-700 mx-1"></div>
+            <button id="multiplierBtn" onclick="cycleMultiplier()" title="Multiplicador de puntos (1x, 2x, 3x)" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-digital font-black px-3 py-1 rounded-xl text-sm shadow transition cursor-pointer">
+                1X
+            </button>
+        </div>
+
+        <!-- TÍTULO PRINCIPAL DEL PROGRAMA -->
+        <div class="text-center">
+            <div class="inline-block bg-gradient-to-r from-amber-500 via-yellow-300 to-amber-500 p-1 rounded-3xl shadow-[0_0_30px_rgba(251,191,36,0.5)]">
+                <div class="bg-gradient-to-b from-blue-900 to-indigo-950 px-6 sm:px-10 py-2 rounded-[20px] border border-amber-300/50">
+                    <h1 class="font-display text-2xl sm:text-4xl md:text-5xl text-transparent bg-clip-text bg-gradient-to-b from-yellow-200 via-amber-400 to-amber-600 logo-glow tracking-wider uppercase">
+                        100 IRRESPONSABLES DIJERON
+                    </h1>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOTONES DE CONFIGURACIÓN Y SONIDO -->
+        <div class="flex items-center gap-2">
+            <button id="toggleQuestionBtn" onclick="toggleQuestionVisibility()" class="bg-slate-900/90 hover:bg-slate-800 border-2 border-cyan-400/60 text-cyan-200 px-3 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 shadow transition cursor-pointer" title="Mostrar u ocultar la pregunta en pantalla">
+                <span id="eyeIcon">👁️</span> <span class="hidden sm:inline">Pregunta</span>
+            </button>
+            <button onclick="openEditorModal()" class="bg-gradient-to-b from-amber-400 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-slate-950 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-1.5 shadow-lg transition cursor-pointer">
+                ✏️ Editar Preguntas
+            </button>
+            <button id="muteBtn" onclick="toggleMute()" class="bg-slate-900/90 hover:bg-slate-800 border-2 border-amber-400/60 text-amber-300 p-2 rounded-xl text-base shadow transition cursor-pointer" title="Activar/Silenciar Sonidos">
+                🔊
+            </button>
+        </div>
+    </header>
+
+    <!-- ÁREA CENTRAL DE JUEGO: EQUIPO 1 | TABLERO TV | EQUIPO 2 -->
+    <main class="max-w-7xl w-full mx-auto grid grid-cols-1 lg:grid-cols-12 gap-4 items-center my-auto">
+        
+        <!-- PANEL EQUIPO 1 (IZQUIERDA) -->
+        <section class="lg:col-span-3 order-2 lg:order-1 bg-gradient-to-b from-blue-900/90 to-slate-950/95 border-4 border-cyan-400 rounded-3xl p-4 shadow-[0_0_25px_rgba(34,211,238,0.25)] flex flex-col items-center text-center">
+            <span class="text-xs uppercase tracking-widest text-cyan-300 font-bold mb-1">Equipo 1</span>
+            
+            <!-- Nombre editable -->
+            <div class="w-full relative group mb-3">
+                <input id="team1Name" type="text" value="Los Crudos" maxlength="20"
+                    onchange="saveGameState()"
+                    class="w-full bg-slate-900/80 hover:bg-slate-800 focus:bg-slate-800 text-center font-extrabold text-xl sm:text-2xl text-white border-2 border-transparent focus:border-amber-400 rounded-xl py-1.5 px-2 outline-none transition"
+                    title="Haz clic para editar el nombre del Equipo 1">
+                <span class="text-[11px] text-slate-400 block mt-0.5">(Clic en el nombre para editar)</span>
+            </div>
+
+            <!-- Marcador gigante -->
+            <div class="w-full bg-black/80 border-4 border-amber-400 rounded-2xl py-4 px-2 mb-4 shadow-inner">
+                <span id="team1Score" class="font-digital text-5xl sm:text-6xl font-black text-amber-400 drop-shadow-[0_0_12px_rgba(251,191,36,0.7)]">
+                    0
+                </span>
+            </div>
+
+            <!-- Botón para asignar los puntos acumulados de la ronda -->
+            <button onclick="awardPotToTeam(1)" class="w-full bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 active:scale-95 text-white font-extrabold py-3 px-3 rounded-xl shadow-lg border border-emerald-300/50 text-sm uppercase tracking-wide transition cursor-pointer mb-2">
+                🏆 Dar Puntos de Ronda
+            </button>
+
+            <!-- Ajuste manual rápido -->
+            <div class="flex items-center gap-2 w-full justify-center mt-1">
+                <button onclick="adjustTeamScore(1, -10)" class="bg-slate-800 hover:bg-red-900/80 text-slate-300 hover:text-white font-bold px-3 py-1 rounded-lg text-xs border border-slate-700 cursor-pointer">-10</button>
+                <span class="text-xs text-slate-400">Ajuste</span>
+                <button onclick="adjustTeamScore(1, 10)" class="bg-slate-800 hover:bg-emerald-900/80 text-slate-300 hover:text-white font-bold px-3 py-1 rounded-lg text-xs border border-slate-700 cursor-pointer">+10</button>
+            </div>
+        </section>
+
+        <!-- TABLERO CENTRAL ESTILO 100 MEXICANOS DIJERON -->
+        <section class="lg:col-span-6 order-1 lg:order-2 flex flex-col items-center">
+            
+            <!-- BOLSA DE PUNTOS ACUMULADOS EN LA RONDA -->
+            <div class="bg-gradient-to-b from-slate-900 to-black border-4 border-amber-400 rounded-t-3xl px-8 py-2.5 shadow-[0_0_25px_rgba(251,191,36,0.4)] flex flex-col items-center -mb-1 z-10">
+                <span class="text-[11px] uppercase tracking-widest text-amber-300 font-extrabold">Puntos en Juego</span>
+                <span id="roundPot" class="font-digital text-4xl sm:text-5xl font-black text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.6)]">
+                    0
+                </span>
+            </div>
+
+            <!-- MARCO PRINCIPAL CON LUCES -->
+            <div class="w-full tv-board-frame rounded-3xl p-3 sm:p-5">
+                <!-- Tira superior de focos -->
+                <div class="h-3 w-full marquee-bulbs rounded-full mb-3 opacity-90"></div>
+
+                <!-- CAJA DE LA PREGUNTA ACTUAL -->
+                <div id="questionBox" class="bg-gradient-to-r from-indigo-950 via-blue-900 to-indigo-950 border-2 border-cyan-400/80 rounded-2xl p-3 sm:p-4 mb-4 text-center shadow-inner min-h-[72px] flex items-center justify-center">
+                    <h2 id="questionText" class="text-base sm:text-xl md:text-2xl font-extrabold text-yellow-200 leading-snug drop-shadow">
+                        Cargando pregunta...
+                    </h2>
+                </div>
+
+                <!-- CUADRÍCULA DE LAS 6 RESPUESTAS (2 COLUMNAS x 3 FILAS) -->
+                <div id="answersGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4">
+                    <!-- Las 6 tarjetas se generan dinámicamente con JS -->
+                </div>
+
+                <!-- BARRA INFERIOR DEL TABLERO: INDICADOR DE STRIKES (X) Y CONTROLES RÁPIDOS -->
+                <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-950/90 border-2 border-slate-800 rounded-2xl p-3">
+                    <!-- Indicadores visuales de Strikes (3 X) -->
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold uppercase text-slate-400 mr-1">Errores:</span>
+                        <div id="strikeBadge1" class="w-9 h-9 rounded-lg border-2 border-slate-700 bg-slate-900 flex items-center justify-center font-display text-xl text-slate-700 transition-all">X</div>
+                        <div id="strikeBadge2" class="w-9 h-9 rounded-lg border-2 border-slate-700 bg-slate-900 flex items-center justify-center font-display text-xl text-slate-700 transition-all">X</div>
+                        <div id="strikeBadge3" class="w-9 h-9 rounded-lg border-2 border-slate-700 bg-slate-900 flex items-center justify-center font-display text-xl text-slate-700 transition-all">X</div>
+                    </div>
+
+                    <!-- Botones de acción inmediata -->
+                    <div class="flex items-center gap-2">
+                        <button onclick="triggerStrike()" class="bg-gradient-to-b from-red-500 to-red-700 hover:from-red-400 hover:to-red-600 active:scale-95 text-white font-black px-4 py-2 rounded-xl shadow-lg border border-red-300/50 text-xs sm:text-sm flex items-center gap-1.5 cursor-pointer" title="También puedes presionar la tecla 0">
+                            ❌ Error (Tecla 0)
+                        </button>
+                        <button onclick="resetStrikes()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-3 py-2 rounded-xl border border-slate-600 text-xs sm:text-sm cursor-pointer" title="Limpiar las X (Útil para Robo de Puntos)">
+                            Limpiar X
+                        </button>
+                        <button onclick="revealAllAnswers()" class="bg-cyan-900/80 hover:bg-cyan-800 text-cyan-200 font-bold px-3 py-2 rounded-xl border border-cyan-600/60 text-xs sm:text-sm cursor-pointer" title="Mostrar todas las respuestas restantes">
+                            Revelar Todo
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tira inferior de focos -->
+                <div class="h-3 w-full marquee-bulbs rounded-full mt-3 opacity-90"></div>
+            </div>
+        </section>
+
+        <!-- PANEL EQUIPO 2 (DERECHA) -->
+        <section class="lg:col-span-3 order-3 bg-gradient-to-b from-blue-900/90 to-slate-950/95 border-4 border-cyan-400 rounded-3xl p-4 shadow-[0_0_25px_rgba(34,211,238,0.25)] flex flex-col items-center text-center">
+            <span class="text-xs uppercase tracking-widest text-cyan-300 font-bold mb-1">Equipo 2</span>
+            
+            <!-- Nombre editable -->
+            <div class="w-full relative group mb-3">
+                <input id="team2Name" type="text" value="Los Sin Quincena" maxlength="20"
+                    onchange="saveGameState()"
+                    class="w-full bg-slate-900/80 hover:bg-slate-800 focus:bg-slate-800 text-center font-extrabold text-xl sm:text-2xl text-white border-2 border-transparent focus:border-amber-400 rounded-xl py-1.5 px-2 outline-none transition"
+                    title="Haz clic para editar el nombre del Equipo 2">
+                <span class="text-[11px] text-slate-400 block mt-0.5">(Clic en el nombre para editar)</span>
+            </div>
+
+            <!-- Marcador gigante -->
+            <div class="w-full bg-black/80 border-4 border-amber-400 rounded-2xl py-4 px-2 mb-4 shadow-inner">
+                <span id="team2Score" class="font-digital text-5xl sm:text-6xl font-black text-amber-400 drop-shadow-[0_0_12px_rgba(251,191,36,0.7)]">
+                    0
+                </span>
+            </div>
+
+            <!-- Botón para asignar los puntos acumulados de la ronda -->
+            <button onclick="awardPotToTeam(2)" class="w-full bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 active:scale-95 text-white font-extrabold py-3 px-3 rounded-xl shadow-lg border border-emerald-300/50 text-sm uppercase tracking-wide transition cursor-pointer mb-2">
+                🏆 Dar Puntos de Ronda
+            </button>
+
+            <!-- Ajuste manual rápido -->
+            <div class="flex items-center gap-2 w-full justify-center mt-1">
+                <button onclick="adjustTeamScore(2, -10)" class="bg-slate-800 hover:bg-red-900/80 text-slate-300 hover:text-white font-bold px-3 py-1 rounded-lg text-xs border border-slate-700 cursor-pointer">-10</button>
+                <span class="text-xs text-slate-400">Ajuste</span>
+                <button onclick="adjustTeamScore(2, 10)" class="bg-slate-800 hover:bg-emerald-900/80 text-sla
